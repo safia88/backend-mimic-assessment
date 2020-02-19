@@ -49,7 +49,7 @@ import sys
 __author__ = "???"
 
 
-def create_mimic_dict(filename):
+def mimic_dict(filename):
     """Returns mimic dict mapping each word to list of words which follow it.
     For example:
         Input: "I am a software developer, and I don't care who knows"
@@ -68,9 +68,25 @@ def create_mimic_dict(filename):
             }
     """
     # +++your code here+++
+    mimic_dict = {}
+    f = open(filename, 'r')
+    text = f.read()
+    f.close()
+    words = text.split()
+    prev = ''
+    for word in words:
+        if prev not in mimic_dict:
+            mimic_dict[prev] = [word]
+        else:
+            mimic_dict[prev].append(word)
+        # Could write as: mimic_dict[prev] = mimic_dict.get(prev, []) + [word]
+        # It's one line, but not totally satisfying.
+        prev = word
+    return mimic_dict
 
 
-def print_mimic(mimic_dict, start_word):
+def mimic(mimic_dict, start_word):
+    # print(mimic_dict)
     """Given a previously compiled mimic_dict and start_word, prints 200 random words:
         - Print the start_word
         - Lookup the start_word in your mimic_dict and get it's next-list
@@ -78,17 +94,22 @@ def print_mimic(mimic_dict, start_word):
         - Repeat this process 200 times
     """
     # +++your code here+++
-    pass
+    for unused_i in range(200):
+        print(start_word)
+        nexts = mimic_dict.get(start_word)          # Returns None if not found
+        if not nexts:
+            nexts = mimic_dict['']  # Fallback to '' if not found
+        start_word = random.choice(nexts)
 
 
 # Provided main(), calls mimic_dict() and mimic()
 def main():
     if len(sys.argv) != 2:
-        print 'usage: python mimic.py file-to-read'
+        print('usage: python mimic.py imdev.txt')
         sys.exit(1)
 
-    d = create_mimic_dict(sys.argv[1])
-    print_mimic(d, '')
+    d = mimic_dict(sys.argv[1])
+    mimic(d, '')
 
 
 if __name__ == '__main__':
